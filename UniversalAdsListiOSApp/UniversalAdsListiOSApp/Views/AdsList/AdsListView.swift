@@ -15,19 +15,22 @@ struct AdsListView: View {
                 if viewModel.isLoading {
                     ProgressView()
                 } else {
+                    HStack {
+                        TextField(Layout.textFieldPlaceholder, text: $viewModel.searchText)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                        
+                        FilterMenuView(isUrgentOnly: $viewModel.isUrgentOnly, sortOrder: $viewModel.sortOrder)
+                        
+                        CategoryFilterMenuView(viewModel: CategoryFilterMenuViewModel(filterHandler: viewModel.filterHandler))
+                    }
+                    .padding()
+                    
                     List(viewModel.filteredAds) { ad in
                         AdItemView(ad: ad)
                     }
-                    .searchable(text: $viewModel.searchText, prompt: Layout.textFieldPlaceholder)
                 }
             }
             .navigationTitle(Layout.navigationTitle)
-            .searchable(text: $viewModel.searchText, prompt: Layout.textFieldPlaceholder)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    FilterMenuView(isUrgentOnly: $viewModel.isUrgentOnly, sortOrder: $viewModel.sortOrder)
-                }
-            }
             .onAppear() {
                 viewModel.fetchAds()
             }
