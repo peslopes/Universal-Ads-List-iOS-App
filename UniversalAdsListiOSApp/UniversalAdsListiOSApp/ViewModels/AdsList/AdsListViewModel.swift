@@ -25,29 +25,33 @@ class AdsListViewModel: ObservableObject {
     }
     
     func fetchAds() {
-        isLoading = true
-        apiService.fetch(.adsList)
-            .receive(on: DispatchQueue.main)
-            .catch { [weak self] error in
-                self?.errorMessage = error.localizedDescription
-                return Just(Array<AdModel>())
-            }
-            .sink { [weak self] ads in
-                self?.ads = ads
-                self?.applyFilters([])
-                self?.isLoading = false
-            }
-            .store(in: &cancellables)
+        if ads.isEmpty {
+            isLoading = true
+            apiService.fetch(.adsList)
+                .receive(on: DispatchQueue.main)
+                .catch { [weak self] error in
+                    self?.errorMessage = error.localizedDescription
+                    return Just(Array<AdModel>())
+                }
+                .sink { [weak self] ads in
+                    self?.ads = ads
+                    self?.applyFilters([])
+                    self?.isLoading = false
+                }
+                .store(in: &cancellables)
+        }
     }
     
     func fetchCategories() {
-        apiService.fetch(.categories)
-            .receive(on: DispatchQueue.main)
-            .replaceError(with: [])
-            .sink { [weak self] categories in
-                self?.handleCategories(categories: categories)
-            }
-            .store(in: &cancellables)
+        if categories.isEmpty {
+            apiService.fetch(.categories)
+                .receive(on: DispatchQueue.main)
+                .replaceError(with: [])
+                .sink { [weak self] categories in
+                    self?.handleCategories(categories: categories)
+                }
+                .store(in: &cancellables)
+        }
     }
 }
 

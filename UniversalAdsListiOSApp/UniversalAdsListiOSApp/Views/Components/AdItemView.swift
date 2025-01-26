@@ -55,6 +55,7 @@ extension AdItemView {
         ad: AdModel(
             id: 0,
             title: "Ad1",
+            description: "test description",
             price: 10,
             categoryID: 1,
             imagesURL: ImagesURL(
