@@ -7,6 +7,7 @@ struct AdItemView: View {
         horizontalSizeClass == .compact ? Layout.imageSizeCompact : Layout.imageSizeRegular
     }
     
+    let category: String
     let ad: AdModel
     
     var body: some View {
@@ -16,19 +17,24 @@ struct AdItemView: View {
                 .frame(width: imageSize, height: imageSize)
             
             VStack(alignment: .leading) {
-                Text(ad.title)
-                    .font(.headline)
+                HStack {
+                    if ad.isUrgent {
+                        Image(systemName: Layout.urgentIndicatorSystemImageName)
+                            .foregroundStyle(Layout.urgentIndicatorForegroundStyle)
+                        
+                    }
+                    Text(ad.title)
+                        .font(.headline)
+                }
                 
-                Text("\(ad.price)\(Layout.adPriceCurrencyString)")
+                Text(category)
+                    .font(.caption)
             }
+            .padding(.vertical)
+            
             Spacer()
             
-            if ad.isUrgent {
-                Image(systemName: Layout.urgentIndicatorSystemImageName)
-                    .frame(width: imageSize, height: imageSize)
-                    .foregroundStyle(Layout.urgentIndicatorForegroundStyle)
-                
-            }
+            Text("\(ad.price)\(Layout.adPriceCurrencyString)")
         }
     }
 }
@@ -45,6 +51,7 @@ extension AdItemView {
 
 #Preview {
     AdItemView(
+        category: "test",
         ad: AdModel(
             id: 0,
             title: "Ad1",

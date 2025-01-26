@@ -2,7 +2,7 @@ import SwiftUI
 
 struct FilterMenuView: View {
     @Binding var isUrgentOnly: Bool
-    @Binding var sortOrder: AdsListViewModel.SortOrder
+    @Binding var sortOrder: SortOrder
     
     var body: some View {
         Menu {
@@ -31,7 +31,7 @@ struct FilterMenuView: View {
                 }
             }
         } label: {
-            Label(Layout.filterMenuLabel, systemImage: Layout.filterMenuSystemImage)
+            Image(systemName: Layout.filterMenuSystemImage)
         }
     }
 }
@@ -41,9 +41,8 @@ extension FilterMenuView {
         static let filterOnSystemImage = "checkmark.square"
         static let filterOffSystemImage = "square"
         static let sortOnSystemImage = "checkmark"
-        static let urgentOnlyLabel = "Uergent only"
+        static let urgentOnlyLabel = "Urgent only"
         
-        static let filterMenuLabel = "Filters"
         static let filterMenuSystemImage = "line.horizontal.3.decrease.circle"
         
         static let sortOptions: [SortOption] = [
@@ -56,7 +55,7 @@ extension FilterMenuView {
         
         struct SortOption: Hashable {
             let title: String
-            let sortOrder: AdsListViewModel.SortOrder
+            let sortOrder: SortOrder
         }
     }
 }
