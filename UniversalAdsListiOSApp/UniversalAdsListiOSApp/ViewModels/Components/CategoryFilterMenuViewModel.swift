@@ -6,22 +6,13 @@ class CategoryFilterMenuViewModel: ObservableObject {
     @Published var selectedCategories: Set<CategoryModel> = []
     
     private var cancellables = Set<AnyCancellable>()
-    private let apiService: APIServiceProtocol
     private let filterHandler: FilterHandlerProtocol
+    private let categoriesPublisher: AnyPublisher<[CategoryModel], Never>
     
-    init(apiService: APIServiceProtocol = APIService(), filterHandler: FilterHandlerProtocol) {
-        self.apiService = apiService
+    init(categoriesPublisher: AnyPublisher<[CategoryModel], Never>, filterHandler: FilterHandlerProtocol) {
+        self.categoriesPublisher = categoriesPublisher
         self.filterHandler = filterHandler
-    }
-    
-    func fetchCategories() {
-        apiService.fetch(.categories)
-            .receive(on: DispatchQueue.main)
-            .replaceError(with: [])
-            .sink { [weak self] categories in
-                self?.categories = categories
-            }
-            .store(in: &cancellables)
+        setupBindings()
     }
     
     func selectAll() {
@@ -45,6 +36,15 @@ class CategoryFilterMenuViewModel: ObservableObject {
 }
 
 extension CategoryFilterMenuViewModel {
+    private func setupBindings() {
+        categoriesPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] categories in
+                self?.categories = categories
+            }
+            .store(in: &cancellables)
+    }
+    
     private func updateCategoryFilter() {
         filterHandler.addFilter(
             AdFilter(id: Constants.categoryFilterId) { [weak self] ad in

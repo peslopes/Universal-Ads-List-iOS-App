@@ -21,17 +21,23 @@ struct AdsListView: View {
                         
                         FilterMenuView(isUrgentOnly: $viewModel.isUrgentOnly, sortOrder: $viewModel.sortOrder)
                         
-                        CategoryFilterMenuView(viewModel: CategoryFilterMenuViewModel(filterHandler: viewModel.filterHandler))
+                        CategoryFilterMenuView(
+                            viewModel: CategoryFilterMenuViewModel(
+                                categoriesPublisher: viewModel.$categories.eraseToAnyPublisher(),
+                                filterHandler: viewModel.filterHandler
+                            )
+                        )
                     }
                     .padding()
                     
                     List(viewModel.filteredAds) { ad in
-                        AdItemView(ad: ad)
+                        AdItemView(category: viewModel.categoryDictionary[ad.categoryID] ?? "", ad: ad)
                     }
                 }
             }
             .navigationTitle(Layout.navigationTitle)
             .onAppear() {
+                viewModel.fetchCategories()
                 viewModel.fetchAds()
             }
         }

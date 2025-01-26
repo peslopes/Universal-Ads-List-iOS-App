@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 struct CategoryFilterMenuView: View {
     @StateObject var viewModel: CategoryFilterMenuViewModel
@@ -19,26 +20,27 @@ struct CategoryFilterMenuView: View {
             
             Divider()
             
-            ForEach(viewModel.categories, id: \.self) { category in
-                Button(action: {
-                    viewModel.toggleCategorySelection(category)
-                }) {
-                    HStack {
-                        Text(category.name)
-                        Spacer()
-                        if viewModel.selectedCategories.contains(category) {
-                            Image(systemName: Layout.categorySelectedSystemImage)
-                        } else {
-                            Image(systemName: Layout.categoryUnselectedSystemImage)
+            if viewModel.categories.isEmpty {
+                Text(Layout.loadingCategoriesText)
+            } else {
+                ForEach(viewModel.categories, id: \.self) { category in
+                    Button(action: {
+                        viewModel.toggleCategorySelection(category)
+                    }) {
+                        HStack {
+                            Text(category.name)
+                            Spacer()
+                            if viewModel.selectedCategories.contains(category) {
+                                Image(systemName: Layout.categorySelectedSystemImage)
+                            } else {
+                                Image(systemName: Layout.categoryUnselectedSystemImage)
+                            }
                         }
                     }
                 }
             }
         } label: {
             Image(systemName: Layout.menuLabelSystemImage)
-        }
-        .onAppear {
-            viewModel.fetchCategories()
         }
     }
 }
@@ -47,6 +49,7 @@ extension CategoryFilterMenuView {
     enum Layout {
         static let selectAllText = "Select All"
         static let unselectAllText = "Unselect All"
+        static let loadingCategoriesText = "Loading categories..."
         
         static let categorySelectedSystemImage = "checkmark.square"
         static let categoryUnselectedSystemImage = "square"
@@ -56,5 +59,5 @@ extension CategoryFilterMenuView {
 }
 
 #Preview {
-    CategoryFilterMenuView(viewModel: CategoryFilterMenuViewModel(filterHandler: FilterHandler()))
+    CategoryFilterMenuView(viewModel: CategoryFilterMenuViewModel(categoriesPublisher: Just(Array<CategoryModel>()).eraseToAnyPublisher(), filterHandler: FilterHandler()))
 }

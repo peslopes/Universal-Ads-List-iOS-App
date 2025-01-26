@@ -5,6 +5,8 @@ class AdsListViewModel: ObservableObject {
     @Published private(set) var filteredAds: [AdModel] = []
     @Published var errorMessage: String?
     @Published var isLoading = false
+    @Published var categories: [CategoryModel] = []
+    @Published var categoryDictionary: [Int: String] = [:]
     
     @Published var searchText: String = ""
     @Published var isUrgentOnly = false
@@ -34,6 +36,16 @@ class AdsListViewModel: ObservableObject {
                 self?.ads = ads
                 self?.applyFilters([])
                 self?.isLoading = false
+            }
+            .store(in: &cancellables)
+    }
+    
+    func fetchCategories() {
+        apiService.fetch(.categories)
+            .receive(on: DispatchQueue.main)
+            .replaceError(with: [])
+            .sink { [weak self] categories in
+                self?.handleCategories(categories: categories)
             }
             .store(in: &cancellables)
     }
@@ -105,6 +117,13 @@ extension AdsListViewModel {
             return ad1.price > ad2.price
         case .none:
             return false
+        }
+    }
+    
+    private func handleCategories(categories: [CategoryModel]) {
+        self.categories = categories
+        self.categoryDictionary = categories.reduce(into: [Int: String]()) { result, property in
+            result[property.id] = property.name
         }
     }
 }

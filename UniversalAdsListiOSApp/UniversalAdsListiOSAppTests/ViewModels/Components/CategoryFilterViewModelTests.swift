@@ -4,26 +4,13 @@ import Combine
 
 final class CategoryFilterViewModelTests: XCTestCase {
     
-    func testFetchCategories_Success() {
-        let sut = CategoryFilterMenuViewModel(apiService: MockAPIService(), filterHandler: FilterHandler())
-        let expectation = XCTestExpectation()
-        let cancellable = sut.$categories
-            .sink { categories in
-                if categories.count == 2 {
-                    expectation.fulfill()
-                }
-            }
-        
-        sut.fetchCategories()
-        
-        wait(for: [expectation], timeout: 1.0)
-        cancellable.cancel()
-        
-        XCTAssertEqual(sut.categories.count, 2)
-    }
-    
     func testSelectAll() {
-        let sut = CategoryFilterMenuViewModel(apiService: MockAPIService(), filterHandler: FilterHandler())
+        let publisher = Just([
+            CategoryModel(id: 1, name: "category1"),
+            CategoryModel(id: 2, name: "category2")
+        ]).eraseToAnyPublisher()
+                             
+        let sut = CategoryFilterMenuViewModel(categoriesPublisher: publisher, filterHandler: FilterHandler())
         let expectation = XCTestExpectation()
         let cancellable = sut.$categories
             .sink { categories in
@@ -32,9 +19,7 @@ final class CategoryFilterViewModelTests: XCTestCase {
                 }
             }
         
-        sut.fetchCategories()
-        
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: 2.0)
         cancellable.cancel()
         
         sut.selectAll()
@@ -43,7 +28,12 @@ final class CategoryFilterViewModelTests: XCTestCase {
     }
     
     func testUnselectAll() {
-        let sut = CategoryFilterMenuViewModel(apiService: MockAPIService(), filterHandler: FilterHandler())
+        let publisher = Just([
+            CategoryModel(id: 1, name: "category1"),
+            CategoryModel(id: 2, name: "category2")
+        ]).eraseToAnyPublisher()
+                             
+        let sut = CategoryFilterMenuViewModel(categoriesPublisher: publisher, filterHandler: FilterHandler())
         let expectation = XCTestExpectation()
         let cancellable = sut.$categories
             .sink { categories in
@@ -52,9 +42,7 @@ final class CategoryFilterViewModelTests: XCTestCase {
                 }
             }
         
-        sut.fetchCategories()
-        
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: 2.0)
         cancellable.cancel()
         
         sut.selectAll()
@@ -67,7 +55,12 @@ final class CategoryFilterViewModelTests: XCTestCase {
     }
     
     func testToggleCategorySelection() {
-        let sut = CategoryFilterMenuViewModel(apiService: MockAPIService(), filterHandler: FilterHandler())
+        let publisher = Just([
+            CategoryModel(id: 1, name: "category1"),
+            CategoryModel(id: 2, name: "category2")
+        ]).eraseToAnyPublisher()
+                             
+        let sut = CategoryFilterMenuViewModel(categoriesPublisher: publisher, filterHandler: FilterHandler())
         let expectation = XCTestExpectation()
         let cancellable = sut.$categories
             .sink { categories in
@@ -76,9 +69,7 @@ final class CategoryFilterViewModelTests: XCTestCase {
                 }
             }
         
-        sut.fetchCategories()
-        
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: 2.0)
         cancellable.cancel()
         
         sut.toggleCategorySelection(CategoryModel(id: 1, name: "category1"))

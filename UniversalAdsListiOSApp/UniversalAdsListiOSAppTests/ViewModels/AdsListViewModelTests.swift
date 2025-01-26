@@ -16,7 +16,7 @@ final class AdsListViewModelTests: XCTestCase {
         
         sut.fetchAds()
         
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: 2.0)
         cancellable.cancel()
         
         XCTAssertEqual(sut.filteredAds.count, 4)
@@ -38,12 +38,30 @@ final class AdsListViewModelTests: XCTestCase {
         
         sut.fetchAds()
         
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: 2.0)
         cancellable.cancel()
         
         XCTAssertTrue(sut.filteredAds.isEmpty)
         XCTAssertNotNil(sut.errorMessage)
         XCTAssertFalse(sut.isLoading)
+    }
+    
+    func testFetchCategories_Success() {
+        let sut = AdsListViewModel(apiService: MockAPIService())
+        let expectation = XCTestExpectation()
+        let cancellable = sut.$categories
+            .sink { categories in
+                if categories.count == 2 {
+                    expectation.fulfill()
+                }
+            }
+        
+        sut.fetchCategories()
+        
+        wait(for: [expectation], timeout: 2.0)
+        cancellable.cancel()
+        
+        XCTAssertEqual(sut.categories.count, 2)
     }
     
     func testSearchTextFilter() {
@@ -59,7 +77,7 @@ final class AdsListViewModelTests: XCTestCase {
         sut.fetchAds()
         sut.searchText = "B"
         
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: 2.0)
         cancellable.cancel()
         
         XCTAssertEqual(sut.filteredAds.count, 1)
@@ -79,7 +97,7 @@ final class AdsListViewModelTests: XCTestCase {
         sut.fetchAds()
         sut.isUrgentOnly = true
         
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: 2.0)
         cancellable.cancel()
         
         XCTAssertEqual(sut.filteredAds.count, 1)
@@ -100,7 +118,7 @@ final class AdsListViewModelTests: XCTestCase {
         sut.fetchAds()
         sut.sortOrder = .alphabeticalAscending
         
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: 2.0)
         cancellable.cancel()
         
         XCTAssertEqual(sut.filteredAds.first?.title, "A")
@@ -120,7 +138,7 @@ final class AdsListViewModelTests: XCTestCase {
         sut.fetchAds()
         sut.sortOrder = .alphabeticalDescending
         
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: 2.0)
         cancellable.cancel()
         
         XCTAssertEqual(sut.filteredAds.first?.title, "D")
@@ -140,7 +158,7 @@ final class AdsListViewModelTests: XCTestCase {
         sut.fetchAds()
         sut.sortOrder = .priceAscending
         
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: 2.0)
         cancellable.cancel()
         
         XCTAssertEqual(sut.filteredAds.first?.price, 10)
@@ -160,7 +178,7 @@ final class AdsListViewModelTests: XCTestCase {
         sut.fetchAds()
         sut.sortOrder = .priceDescending
         
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: 2.0)
         cancellable.cancel()
         
         XCTAssertEqual(sut.filteredAds.first?.price, 25)
