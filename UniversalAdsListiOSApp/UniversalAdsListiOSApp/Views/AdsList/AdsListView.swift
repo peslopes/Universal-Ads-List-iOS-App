@@ -31,7 +31,9 @@ struct AdsListView: View {
                     .padding()
                     
                     List(viewModel.filteredAds) { ad in
-                        AdItemView(category: viewModel.categoryDictionary[ad.categoryID] ?? "", ad: ad)
+                        NavigationLink(destination: AdDetailsViewControllerWrapper(ad: ad, category: viewModel.categoryDictionary[ad.categoryID] ?? "")) {
+                            AdItemView(category: viewModel.categoryDictionary[ad.categoryID] ?? "", ad: ad)
+                        }
                     }
                 }
             }
