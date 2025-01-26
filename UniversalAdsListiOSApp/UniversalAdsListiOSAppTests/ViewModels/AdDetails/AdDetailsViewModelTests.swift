@@ -42,12 +42,14 @@ final class AdDetailsViewModelTests: XCTestCase {
             isUrgent: true
         )
         let expectation = XCTestExpectation()
+        
         let imageLoader = MockImageLoader()
         imageLoader.shouldFailure = true
+        
         let sut = AdDetailsViewModel(ad: ad, category: "Test Category", imageLoader: imageLoader)
         let cancellable = sut.$image
             .sink { image in
-                if image == nil {
+                if image == UIImage(systemName: "photo") {
                     expectation.fulfill()
                 }
             }
@@ -57,7 +59,7 @@ final class AdDetailsViewModelTests: XCTestCase {
         wait(for: [expectation], timeout: 2.0)
         cancellable.cancel()
         
-        XCTAssertNil(sut.image)
+        XCTAssertEqual(sut.image, UIImage(systemName: "photo"))
     }
     
     func testTitleProperty() {
